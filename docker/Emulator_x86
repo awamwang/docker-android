@@ -50,7 +50,10 @@ WORKDIR /root
 # bridge-utils
 #==================
 ADD docker/configs/x11vnc.pref /etc/apt/preferences.d/
-RUN apt-get -qqy update && apt-get -qqy install --no-install-recommends \
+COPY docker/configs/apt-sources.list /etc/apt/sources.list.new
+RUN cp /etc/apt/sources.list /etc/apt/sources.list.bak \
+    && mv /etc/apt/sources.list.new /etc/apt/sources.list
+RUN apt -qqy update && apt -qqy install --no-install-recommends \
     xterm \
     supervisor \
     socat \
@@ -118,7 +121,6 @@ ENV PATH ${PATH}:${ANDROID_HOME}/build-tools
 
 RUN yes | sdkmanager --licenses && \
     sdkmanager "platforms;android-${API_LEVEL}" "system-images;android-${API_LEVEL};${IMG_TYPE};${SYS_IMG}" "emulator"
-
 #==============================================
 # Download proper version of chromedriver
 # to be able to use Chrome browser in emulator
